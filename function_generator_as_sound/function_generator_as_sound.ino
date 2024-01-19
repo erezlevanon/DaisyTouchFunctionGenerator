@@ -27,7 +27,7 @@ TouchGenerator generator;
 void AudioCallback(float **in, float **out, size_t size) {
   // Update generator properties.
   generator.SetFreq(round(powf(f_knob.Process(), 4) * 2000.0) * 0.2f / 0.2f);
-  generator.SetSmooth(s_knob.Process());
+  generator.SetSmooth(s_knob.Process() + 1.0f);
   // Get master volume.
   const float masterVolume = a_knob.Process();
 
