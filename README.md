@@ -40,3 +40,15 @@ This repository contains an example as using the TouchGenerator as sort of a wav
 
 - At low frequencies (<30Hz) it sounds like a blip generating machine, where the touch sequence controls the pitch and arrangement of those bleeps.
 - At audible frequencies it functions as a unique oscilator where the waveform is conroled by the touch sequence.
+
+## Wiring
+The code example expects a [Synthux Simple Fixed Synth](https://www.synthux.academy/shop/kit-simple-fix) with an MP121 touch sensor connected to i2c4 pins. It can be easily adjusted to any daisy seed.
+
+## Explicit Wiring
+| Daisy pin | SimpleSynth Socket | Function
+|-----------|--------------------|---------
+|    A2     |        S32         |  Master Volume Potentiometer
+|    A1     |        S31         |  Frequency Potentiometer
+|    A0     |        S30         |  Smoothing Potentiometer
+|    D14    |                    |  MR121 SDA pin
+|    D13    |                    |  MR121 SCL pin
