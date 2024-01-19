@@ -18,19 +18,19 @@ static AKnob f_knob(A(S31));
 static AKnob a_knob(A(S32));
 static AKnob s_knob(A(S30));
 
-
-
 ///////////////////////////////////////////////////////////////
 ///////////////////// TOUCH HANDLERS //////////////////////////
 TouchGenerator generator;
-MoogLadder filter;
 
 ///////////////////////////////////////////////////////////////
 ///////////////////// AUDIO CALLBACK (PATCH) //////////////////
 void AudioCallback(float **in, float **out, size_t size) {
-  generator.SetFreq(f_knob.Process() * 1760.f);
+  // Update generator properties.
+  generator.SetFreq(round(powf(f_knob.Process(), 4) * 2000.0) * 0.2f / 0.2f);
   generator.SetSmooth(s_knob.Process());
+  // Get master volume.
   const float masterVolume = a_knob.Process();
+
   for (size_t i = 0; i < size; i++) {
     const float cur_val = generator.Process();
     out[0][i] = cur_val * masterVolume;
@@ -50,16 +50,14 @@ void setup() {
 
   generator.Init(sample_rate);
 
-  filter.Init(sample_rate);
-
   // BEGIN CALLBACK
   DAISY.begin(AudioCallback);
 
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  // Update generator function if necessary
   generator.Update();
 
-  delay(1);
+  delay(4);
 }
