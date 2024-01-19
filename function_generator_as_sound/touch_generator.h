@@ -13,11 +13,20 @@ using namespace simpletouch;
 
 namespace touchgenerator {
 
-float lerp(float a, float b, float x, float s) {
+// A "segemented" linear interpulation function.
+// while a classic lerp function will give you a value between a and b in proportion to x,
+// this function simulates dividing the range between a and b to s segements, transition from a to b
+// and returns the value of the bucket where x falls.
+// if s <= 1, will return a,
+// if s is infinity, will behave like classic lerp function. 
+// This was meant to work with a, b and x between 0 and 1, and with s >= 1.
+// Other values might have undefined behavior.
+float slerp(float a, float b, float x, float s) {
+  if (s <= 1) return a;
   return (a * s + floor(x * s * (b - a) / 10.0) * 10.0) / s;
 }
 
-// namespace {
+namespace {
 static size_t vals[NUM_SEGMENTS] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 static size_t starts[NUM_SEGMENTS] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 static float cur_func[NUM_SEGMENTS] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
@@ -25,11 +34,10 @@ static float cur_func[NUM_SEGMENTS] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f
 static bool prev_state = false;
 
 static Touch touch;
-// } // namespace
 void OnPadTouch(uint16_t pad) {
   const bool cur_state = touch.HasTouch();
   if (!prev_state && cur_state) {
-    Serial.println("start");
+    Serial.println("Recording Function");
     for (int i = 0; i < NUM_SEGMENTS; i++) {
       vals[i] = 0;
       starts[i] = 0;
@@ -54,16 +62,13 @@ void OnPadRelease(uint16_t pad) {
       Serial.println("missfire");
       return;
     }
-    float cumsum = 0.0f;
 
     for (int i = 0; i < NUM_SEGMENTS; i++) {
       cur_func[i] = float(vals[i]) / float(cur_max * 0.5f) - 1.0f;
-      cumsum += cur_func[i];
     }
-    
-    // Normalize wave to have integral of 1.0
+
+    // Print generated function
     for (int i = 0; i < NUM_SEGMENTS; i++) {
-      // cur_func[i] = cur_func[i] / cumsum;
       Serial.print(cur_func[i], 2);
       Serial.print("-");
     }
@@ -71,11 +76,12 @@ void OnPadRelease(uint16_t pad) {
   }
   prev_state = cur_state;
 }
+}  // namespace
+
 
 class TouchGenerator {
 public:
-  void Init(float sample_rate) {
-    Serial.println("initing");
+  void Init(float sample_rate, int scl, int sda) {
     sample_rate_ = sample_rate;
 
     osc_.Init(sample_rate_);
@@ -83,9 +89,14 @@ public:
     osc_.SetAmp(0.5f - 0.001f);
     osc_.SetFreq(880.0f);
 
-    touch.Init();
+    touch.Init(scl, sda);
     touch.SetOnTouch(OnPadTouch);
     touch.SetOnRelease(OnPadRelease);
+  }
+
+  // Init with default i2c connections (daisy i2c4).
+  void Init(float sample_rate) {
+    Init(sample_rate, D13, D14);
   }
 
   float Process() {
@@ -94,8 +105,8 @@ public:
     float prev = cur_func[int(cur_pos_)];
     float next = cur_func[int(cur_pos_ + 1) % NUM_SEGMENTS];
     float interpulation = cur_pos_ - int(cur_pos_);
-    
-    return lerp(prev, next, interpulation, smoothing_) * amp_;
+
+    return slerp(prev, next, interpulation, smoothing_) * amp_;
   }
 
   void SetFreq(float f) {

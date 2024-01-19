@@ -19,10 +19,10 @@ class Touch {
       _on_release { nullptr }
       {}
 
-    void Init() {
+    void Init(int scl, int sda) {
       // Uncomment if you want to use i2C4
-      Wire.setSCL(D13);
-      Wire.setSDA(D14);
+      Wire.setSCL(scl);
+      Wire.setSDA(sda);
       
       if (!_cap.begin(0x5A)) {
         Serial.println("MPR121 not found, check wiring?");
