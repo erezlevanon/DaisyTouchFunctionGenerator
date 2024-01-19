@@ -27,16 +27,20 @@ float slerp(float a, float b, float x, float s) {
 }
 
 namespace {
-static size_t vals[NUM_SEGMENTS] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-static size_t starts[NUM_SEGMENTS] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// A represntation of the current set generated functino / waveform.
 static float cur_func[NUM_SEGMENTS] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
 
-static bool prev_state = false;
+// Utility arrays used to calculate cur_func from the touch seqeunce.
+static size_t vals[NUM_SEGMENTS] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+static size_t starts[NUM_SEGMENTS] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+
+static bool recording_touch_sequence = false;
 
 static Touch touch;
 void OnPadTouch(uint16_t pad) {
-  const bool cur_state = touch.HasTouch();
-  if (!prev_state && cur_state) {
+  const bool has_touch = touch.HasTouch();
+  if (!recording_touch_sequence && has_touch) {
     Serial.println("Recording Function");
     for (int i = 0; i < NUM_SEGMENTS; i++) {
       vals[i] = 0;
@@ -46,12 +50,12 @@ void OnPadTouch(uint16_t pad) {
   if (pad < NUM_SEGMENTS) {
     starts[pad] = millis();
   }
-  prev_state = cur_state;
+  recording_touch_sequence = has_touch;
 }
 
 void OnPadRelease(uint16_t pad) {
-  const bool cur_state = touch.HasTouch();
-  if (prev_state && !cur_state) {
+  const bool has_touch = touch.HasTouch();
+  if (recording_touch_sequence && !has_touch) {
     size_t cur_max = 0;
     size_t cur_millis = millis();
     for (int i = 0; i < NUM_SEGMENTS; i++) {
@@ -74,13 +78,14 @@ void OnPadRelease(uint16_t pad) {
     }
     Serial.println();
   }
-  prev_state = cur_state;
+  recording_touch_sequence = has_touch;
 }
 }  // namespace
 
 
 class TouchGenerator {
 public:
+  //
   void Init(float sample_rate, int scl, int sda) {
     sample_rate_ = sample_rate;
 
@@ -118,7 +123,8 @@ public:
   }
 
   void SetSmooth(float s) {
-    smoothing_ = s * 1800.0f + 200.0f;
+    // smoothing_ = s * 1800.0f + 200.0f;
+    smoothing_ = s * 1800.0f + 1.0f;
   }
 
   void Update() {
