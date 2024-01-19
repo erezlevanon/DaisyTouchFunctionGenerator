@@ -3,6 +3,7 @@
 ## Intro
 A touch based function generator used to produce sounds using daisy seed and MPR121.
 This was created as part of [Synthux](https://www.synthux.academy/) 2023 Synthmas End of Year Contest.
+[See this video for a demonstration of some functionallity](https://youtu.be/KqnuhWOUvzw)
 
 This directory introduces a header file defining a function generator / waveform generator where the wave form is created by using a MPR121 touch (capacity) sensor.
 
@@ -40,6 +41,8 @@ This repository contains an example as using the TouchGenerator as sort of a wav
 
 - At low frequencies (<30Hz) it sounds like a blip generating machine, where the touch sequence controls the pitch and arrangement of those bleeps.
 - At audible frequencies it functions as a unique oscilator where the waveform is conroled by the touch sequence.
+
+[See this video for a demonstration of this functionallity](https://youtu.be/KqnuhWOUvzw)
 
 I'll hopefully add more examples to this repository.
 
