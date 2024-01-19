@@ -54,3 +54,6 @@ The code example expects a [Synthux Simple Fixed Synth](https://www.synthux.acad
 |    A0     |        S30         |  Smoothing Potentiometer
 |    D14    |                    |  MR121 SDA pin
 |    D13    |                    |  MR121 SCL pin
+
+## Attribution
+This repository contains and uses a slightly edited version of [simple-daisy-touch.h](https://github.com/Synthux-Academy/simple-examples-touch/blob/main/daisyduino/simple-drum-machine-touch/simple-daisy-touch.h) and [aknob](https://github.com/Synthux-Academy/simple-examples-touch/blob/main/daisyduino/simple-drum-machine-touch/aknob.h) created by [bleeptools](https://github.com/bleeptools). The main changes were to allow determining 12c pins, and enabling knowing in in the _on_touch callback whether after it's done the sensor will be in a state of touch or untouched. 
