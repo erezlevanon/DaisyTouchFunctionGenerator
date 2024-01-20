@@ -3,7 +3,8 @@
 
 ///////////////////////////////////////////////////////////////
 ///////////////////// LIBRARIES & HARDWARE ////////////////////
-#include "touch_generator.h"
+#include <DaisyTouchFunctionGenerator.h>
+
 #include "simple-daisy-touch.h"
 #include "aknob.h"
 #include "DaisyDuino.h"
