@@ -34,11 +34,11 @@ class Touch {
     }
 
     // Register note on callback
-    void SetOnTouch(void(*on_touch)(uint16_t pad)) {
+    void SetOnTouch(std::function<void(uint16_t)> on_touch) {
       _on_touch = on_touch;
     }
 
-    void SetOnRelease(void(*on_release)(uint16_t pad)) {
+    void SetOnRelease(std::function<void(uint16_t)> on_release) {
       _on_release = on_release;
     }
 
@@ -70,8 +70,8 @@ class Touch {
     }
 
   private:
-    void(*_on_touch)(uint16_t pad);
-    void(*_on_release)(uint16_t pad);
+    std::function<void(uint16_t)> _on_touch;
+    std::function<void(uint16_t)> _on_release;
 
     Adafruit_MPR121 _cap;
     uint16_t _state;

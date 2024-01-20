@@ -25,59 +25,8 @@ namespace touchgenerator {
 			return (a * s + floor(x * s * (b - a) / 10.0) * 10.0) / s;
 		}
 
-		// A represntation of the current set generated functino / waveform.
-		static float cur_func[NUM_SEGMENTS] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
-
-		// Utility arrays used to calculate cur_func from the touch seqeunce.
-		static size_t vals[NUM_SEGMENTS] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-		static size_t starts[NUM_SEGMENTS] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-
-		static bool recording_touch_sequence = false;
-
-		static Touch touch;
-		void OnPadTouch(uint16_t pad) {
-			const bool has_touch = touch.HasTouch();
-			if (!recording_touch_sequence && has_touch) {
-				Serial.println("Recording Function");
-				for (int i = 0; i < NUM_SEGMENTS; i++) {
-					vals[i] = 0;
-					starts[i] = 0;
-				}
-			}
-			if (pad < NUM_SEGMENTS) {
-				starts[pad] = millis();
-			}
-			recording_touch_sequence = has_touch;
-		}
-
-		void OnPadRelease(uint16_t pad) {
-			const bool has_touch = touch.HasTouch();
-			if (recording_touch_sequence && !has_touch) {
-				size_t cur_max = 0;
-				size_t cur_millis = millis();
-				for (int i = 0; i < NUM_SEGMENTS; i++) {
-					vals[i] = starts[i] == 0 ? 0 : millis() - starts[i];
-					if (vals[i] > cur_max) cur_max = vals[i];
-				}
-				if (cur_max == 0) {
-					Serial.println("missfire");
-					return;
-				}
-
-				for (int i = 0; i < NUM_SEGMENTS; i++) {
-					cur_func[i] = float(vals[i]) / float(cur_max * 0.5f) - 1.0f;
-				}
-
-				// Print generated function
-				for (int i = 0; i < NUM_SEGMENTS; i++) {
-					Serial.print(cur_func[i], 2);
-					Serial.print("-");
-				}
-				Serial.println();
-			}
-			recording_touch_sequence = has_touch;
-		}
 	}  // namespace
+
 
 	void TouchGenerator::Init(float sample_rate, int scl, int sda) {
 		sample_rate_ = sample_rate;
@@ -87,9 +36,9 @@ namespace touchgenerator {
 		osc_.SetAmp(0.5f - 0.001f);
 		osc_.SetFreq(880.0f);
 
-		touch.Init(scl, sda);
-		touch.SetOnTouch(OnPadTouch);
-		touch.SetOnRelease(OnPadRelease);
+		touch_.Init(scl, sda);
+		touch_.SetOnTouch([&](uint16_t pad) -> void {OnPadTouch(pad); });
+		touch_.SetOnRelease([&](uint16_t pad) -> void {OnPadRelease(pad); });
 	}
 
 	// Init with default i2c connections (daisy i2c4).
@@ -97,11 +46,54 @@ namespace touchgenerator {
 		Init(sample_rate, D13, D14);
 	}
 
+	void TouchGenerator::OnPadTouch(uint16_t pad) {
+		const bool has_touch = touch_.HasTouch();
+		if (!recording_touch_sequence && has_touch) {
+			Serial.println("Recording Function");
+			for (int i = 0; i < NUM_SEGMENTS; i++) {
+				vals_[i] = 0;
+				starts_[i] = 0;
+			}
+		}
+		if (pad < NUM_SEGMENTS) {
+			starts_[pad] = millis();
+		}
+		recording_touch_sequence = has_touch;
+	}
+
+	void TouchGenerator::OnPadRelease(uint16_t pad) {
+		const bool has_touch = touch_.HasTouch();
+		if (recording_touch_sequence && !has_touch) {
+			size_t cur_max = 0;
+			size_t cur_millis = millis();
+			for (int i = 0; i < NUM_SEGMENTS; i++) {
+				vals_[i] = starts_[i] == 0 ? 0 : millis() - starts_[i];
+				if (vals_[i] > cur_max) cur_max = vals_[i];
+			}
+			if (cur_max == 0) {
+				Serial.println("missfire");
+				return;
+			}
+
+			for (int i = 0; i < NUM_SEGMENTS; i++) {
+				cur_func_[i] = float(vals_[i]) / float(cur_max * 0.5f) - 1.0f;
+			}
+
+			// Print generated function
+			for (int i = 0; i < NUM_SEGMENTS; i++) {
+				Serial.print(cur_func_[i], 2);
+				Serial.print("-");
+			}
+			Serial.println();
+		}
+		recording_touch_sequence = has_touch;
+	}
+
 	float TouchGenerator::Process() {
 		cur_pos_ = (osc_.Process() + 0.5f) * float(NUM_SEGMENTS);
 
-		float prev = cur_func[int(cur_pos_)];
-		float next = cur_func[int(cur_pos_ + 1) % NUM_SEGMENTS];
+		float prev = cur_func_[int(cur_pos_)];
+		float next = cur_func_[int(cur_pos_ + 1) % NUM_SEGMENTS];
 		float interpulation = cur_pos_ - int(cur_pos_);
 
 		return slerp(prev, next, interpulation, smoothing_) * amp_;
@@ -121,6 +113,6 @@ namespace touchgenerator {
 	}
 
 	void TouchGenerator::Update() {
-		touch.Process();
+		touch_.Process();
 	}
 }  // namespace touchgenerator
