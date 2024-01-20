@@ -1,7 +1,7 @@
-# daisy_touch_function_geneartor
+# DaisyTouchFunctionGenerator
 
 ## Intro
-A touch based function generator used to produce sounds using daisy seed and MPR121.
+An arduino library for a touch based function generator used to produce sounds using Daisy Seed and MPR121.
 This was created as part of [Synthux](https://www.synthux.academy/) 2023 Synthmas End of Year Contest.
 [See this video for a demonstration of some functionallity](https://youtu.be/KqnuhWOUvzw)
 
@@ -14,6 +14,10 @@ These in turn can be used in many ways, some examples:
 - As waveforms for "oscilators" generating sound.
 - As waveforms for "lfo"s patched into other components such as filters.
 - As functions for arppegiators or sequencer.
+
+## Installation
+Download or clore the entire repository into your arduino library directory. \
+You should then be able to include the library in any sketch, and the code examples will have the examples for this library as well.
 
 ## Generating a function/waveform
 
@@ -37,7 +41,7 @@ An aditional functionallity is variable smoothing of the waveform, when no smoot
 
 
 ## What's in the box
-This repository contains an example as using the TouchGenerator as sort of a wavefrom generator sort of an oscilator to generate sounds.
+This repository contains an Arduino Library for the Touch Function Generator and an example as using the TouchGenerator as sort of a wavefrom generator sort of an oscilator to generate sounds.
 
 - At low frequencies (<30Hz) it sounds like a blip generating machine, where the touch sequence controls the pitch and arrangement of those bleeps.
 - At audible frequencies it functions as a unique oscilator where the waveform is conroled by the touch sequence.
