@@ -16,7 +16,7 @@ These in turn can be used in many ways, some examples:
 - As functions for arppegiators or sequencer.
 
 ## Installation
-Download or clore the entire repository into your arduino library directory. \
+Download or clone the entire repository into your arduino library directory. \
 You should then be able to include the library in any sketch, and the code examples will have the examples for this library as well.
 
 ## Generating a function/waveform
