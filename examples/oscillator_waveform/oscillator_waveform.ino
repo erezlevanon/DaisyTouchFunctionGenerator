@@ -24,39 +24,39 @@ TouchGenerator generator;
 
 ///////////////////////////////////////////////////////////////
 ///////////////////// AUDIO CALLBACK (PATCH) //////////////////
-void AudioCallback(float **in, float **out, size_t size) {
-  // Update generator properties.
-  generator.SetFreq(round(powf(f_knob.Process(), 4) * 2000.0) * 0.2f / 0.2f);
-  generator.SetSmooth(s_knob.Process());
-  // Get master volume.
-  const float masterVolume = a_knob.Process();
+void AudioCallback(float** in, float** out, size_t size) {
+	// Update generator properties.
+	generator.SetFreq(powf(f_knob.Process(), 4) * 2000.0);
+	generator.SetSmooth(s_knob.Process());
+	// Get master volume.
+	const float masterVolume = a_knob.Process();
 
-  for (size_t i = 0; i < size; i++) {
-    const float cur_val = generator.Process();
-    out[0][i] = cur_val * masterVolume;
-    out[1][i] = cur_val * masterVolume;
-  }
+	for (size_t i = 0; i < size; i++) {
+		const float cur_val = generator.Process();
+		out[0][i] = cur_val * masterVolume;
+		out[1][i] = cur_val * masterVolume;
+	}
 }
 
 ///////////////////////////////////////////////////////////////
 ///////////////////// SETUP ///////////////////////////////////
 
-void setup() {  
-  Serial.begin(9600);
-  // SETUP DAISY
-  DAISY.init(DAISY_SEED, AUDIO_SR_48K);
-  auto sample_rate = DAISY.get_samplerate();
+void setup() {
+	Serial.begin(9600);
+	// SETUP DAISY
+	DAISY.init(DAISY_SEED, AUDIO_SR_48K);
+	auto sample_rate = DAISY.get_samplerate();
 
-  // Init generator.
-  generator.Init(sample_rate);
+	// Init generator.
+	generator.Init(sample_rate);
 
-  // BEGIN CALLBACK
-  DAISY.begin(AudioCallback);
+	// BEGIN CALLBACK
+	DAISY.begin(AudioCallback);
 }
 
 void loop() {
-  // Update generator function if necessary
-  generator.Update();
+	// Update generator function if necessary
+	generator.Update();
 
-  delay(4);
+	delay(4);
 }

@@ -108,8 +108,7 @@ namespace touchgenerator {
 	}
 
 	void TouchGenerator::SetSmooth(float s) {
-		// smoothing_ = s * 1800.0f + 200.0f;
-		smoothing_ = s * 1800.0f + 1.0f;
+		smoothing_ = powf(s, 4) * 1800.0f + 1.00001f;
 	}
 
 	void TouchGenerator::Update() {

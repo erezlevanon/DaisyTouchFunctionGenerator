@@ -27,6 +27,8 @@ namespace touchgenerator {
 
 		void SetAmp(float a);
 
+		// Set the smoothing cooeficient for the generated function.
+		// accepted values are from 0 to 1.
 		void SetSmooth(float s);
 
 		void Update();
