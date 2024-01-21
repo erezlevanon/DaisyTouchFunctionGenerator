@@ -67,7 +67,7 @@ namespace touchgenerator {
 			size_t cur_max = 0;
 			size_t cur_millis = millis();
 			for (int i = 0; i < NUM_SEGMENTS; i++) {
-				vals_[i] = starts_[i] == 0 ? 0 : millis() - starts_[i];
+				vals_[i] = starts_[i] == 0 ? 0 : cur_millis - starts_[i];
 				if (vals_[i] > cur_max) cur_max = vals_[i];
 			}
 			if (cur_max == 0) {
@@ -76,7 +76,7 @@ namespace touchgenerator {
 			}
 
 			for (int i = 0; i < NUM_SEGMENTS; i++) {
-				cur_func_[i] = float(vals_[i]) / float(cur_max * 0.5f) - 1.0f;
+				cur_func_[i] = float(vals_[i]) * (max_val_ - min_val_) / float(cur_max) + min_val_;
 			}
 
 			// Print generated function
@@ -98,6 +98,12 @@ namespace touchgenerator {
 
 		return slerp(prev, next, interpulation, smoothing_) * amp_;
 	}
+
+	void TouchGenerator::SetRange(float min_val, float max_val) {
+		min_val_ = min_val;
+		max_val_ = max_val;
+	}
+
 
 	void TouchGenerator::SetFreq(float f) {
 		osc_.SetFreq(f);

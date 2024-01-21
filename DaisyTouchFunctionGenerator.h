@@ -21,6 +21,8 @@ namespace touchgenerator {
 		// Init with default i2c connections (daisy i2c4).
 		void Init(float sample_rate);
 
+		void SetRange(float min_val, float max_val);
+
 		float Process();
 
 		void SetFreq(float f);
@@ -43,6 +45,8 @@ namespace touchgenerator {
 		float cur_pos_ = 0.0f;
 		float smoothing_ = 1.0f;
 		float amp_ = 1.0f;
+		float min_val_ = -1.0f;
+		float max_val_ = 1.0f;
 
 		// A represntation of the current set generated functino / waveform.
 		float cur_func_[NUM_SEGMENTS] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
