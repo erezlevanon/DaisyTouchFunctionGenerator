@@ -1,8 +1,8 @@
 #include "DaisyTouchFunctionGenerator.h"
 
 #include "simple-daisy-touch.h"
-#include "DaisyDuino.h"
-#include "Adafruit_MPR121.h"
+#include <DaisyDuino.h>
+#include <Adafruit_MPR121.h>
 #include <Arduino.h>
 
 using namespace synthux;
@@ -50,12 +50,12 @@ namespace touchgenerator {
 		const bool has_touch = touch_.HasTouch();
 		if (!recording_touch_sequence && has_touch) {
 			Serial.println("Recording Function");
-			for (int i = 0; i < NUM_SEGMENTS; i++) {
+			for (int i = 0; i < kNumSegments; i++) {
 				vals_[i] = 0;
 				starts_[i] = 0;
 			}
 		}
-		if (pad < NUM_SEGMENTS) {
+		if (pad < kNumSegments) {
 			starts_[pad] = millis();
 		}
 		recording_touch_sequence = has_touch;
@@ -66,7 +66,7 @@ namespace touchgenerator {
 		if (recording_touch_sequence && !has_touch) {
 			size_t cur_max = 0;
 			size_t cur_millis = millis();
-			for (int i = 0; i < NUM_SEGMENTS; i++) {
+			for (int i = 0; i < kNumSegments; i++) {
 				vals_[i] = starts_[i] == 0 ? 0 : cur_millis - starts_[i];
 				if (vals_[i] > cur_max) cur_max = vals_[i];
 			}
@@ -75,12 +75,12 @@ namespace touchgenerator {
 				return;
 			}
 
-			for (int i = 0; i < NUM_SEGMENTS; i++) {
+			for (int i = 0; i < kNumSegments; i++) {
 				cur_func_[i] = float(vals_[i]) * (max_val_ - min_val_) / float(cur_max) + min_val_;
 			}
 
 			// Print generated function
-			for (int i = 0; i < NUM_SEGMENTS; i++) {
+			for (int i = 0; i < kNumSegments; i++) {
 				Serial.print(cur_func_[i], 2);
 				Serial.print("-");
 			}
@@ -90,10 +90,10 @@ namespace touchgenerator {
 	}
 
 	float TouchGenerator::Process() {
-		cur_pos_ = (osc_.Process() + 0.5f) * float(NUM_SEGMENTS);
+		cur_pos_ = (osc_.Process() + 0.5f) * float(kNumSegments);
 
 		float prev = cur_func_[int(cur_pos_)];
-		float next = cur_func_[int(cur_pos_ + 1) % NUM_SEGMENTS];
+		float next = cur_func_[int(cur_pos_ + 1) % kNumSegments];
 		float interpulation = cur_pos_ - int(cur_pos_);
 
 		return slerp(prev, next, interpulation, smoothing_) * amp_;
