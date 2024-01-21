@@ -15,7 +15,7 @@ using namespace touchgenerator;
 ////////////////////////////////////////////////////////////
 ////////////// KNOBS, SWITCHES, PADS, JACKS ////////////////
 static AKnob f_knob(A(S31));
-static AKnob r_knob(A(S32));
+static AKnob c_knob(A(S32));
 static AKnob s_knob(A(S30));
 
 ////////////////////////////////////////////////////////////
@@ -30,9 +30,9 @@ void AudioCallback(float** in, float** out, size_t size) {
 	generator.SetFreq(powf(f_knob.Process(), 4) * 3.0f);
 	generator.SetSmooth(s_knob.Process());
 	// Update filter properties
-	filter.SetRes(r_knob.Process());
+	float max_cutoff = c_knob.Process() * 800.0f;
 	for (size_t i = 0; i < size; i++) {
-		filter.SetFreq(generator.Process());
+		filter.SetFreq(1023.0 - max_cutoff * generator.Process());
 		out[0][i] = filter.Process(in[0][i]);
 		out[1][i] = filter.Process(in[1][i]);
 	}
@@ -49,7 +49,7 @@ void setup() {
 
 	// Init generator.
 	generator.Init(sample_rate);
-	generator.SetRange(3520.0, 220.0);
+	generator.SetRange(0.0, 1.0);
 
 	filter.Init(sample_rate);
 

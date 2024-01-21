@@ -57,7 +57,7 @@ The code example expects a [Synthux Simple Fixed Synth](https://www.synthux.acad
 #### Explicit Wiring
 | Daisy pin | SimpleSynth Socket | Function
 |-----------|--------------------|---------
-|    A2     |        S32         |  Master Volume Potentiometer
+|    A2     |        S32         |  Filter cutoff range
 |    A1     |        S31         |  Frequency Potentiometer
 |    A0     |        S30         |  Smoothing Potentiometer
 |    D14    |                    |  MR121 SDA pin
