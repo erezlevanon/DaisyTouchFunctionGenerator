@@ -1,8 +1,8 @@
 #pragma once
 
 #include "simple-daisy-touch.h"
-#include "DaisyDuino.h"
-#include "Adafruit_MPR121.h"
+#include <DaisyDuino.h>
+#include <Adafruit_MPR121.h>
 #include <Arduino.h>
 
 
