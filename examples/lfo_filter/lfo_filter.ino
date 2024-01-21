@@ -50,6 +50,8 @@ void setup() {
 	// Init generator.
 	generator.Init(sample_rate);
 	generator.SetRange(0.0, 1.0);
+	// Allow generator debug prints
+	generator.setDebug(true);
 
 	filter.Init(sample_rate);
 

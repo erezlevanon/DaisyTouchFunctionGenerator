@@ -49,6 +49,8 @@ void setup() {
 
 	// Init generator.
 	generator.Init(sample_rate);
+	// Allow generator debug prints
+	generator.setDebug(true);
 
 	// BEGIN CALLBACK
 	DAISY.begin(AudioCallback);

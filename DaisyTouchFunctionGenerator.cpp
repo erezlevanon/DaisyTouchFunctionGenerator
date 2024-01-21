@@ -49,7 +49,9 @@ namespace touchgenerator {
 	void TouchGenerator::OnPadTouch(uint16_t pad) {
 		const bool has_touch = touch_.HasTouch();
 		if (!recording_touch_sequence && has_touch) {
-			Serial.println("Recording Function");
+			if (debug_) {
+				Serial.println("Recording Function");
+			}
 			for (int i = 0; i < kNumSegments; i++) {
 				vals_[i] = 0;
 				starts_[i] = 0;
@@ -71,7 +73,11 @@ namespace touchgenerator {
 				if (vals_[i] > cur_max) cur_max = vals_[i];
 			}
 			if (cur_max == 0) {
-				Serial.println("missfire");
+				if (debug_) {
+					Serial.print("Did not touch pads from 0 to ");
+					Serial.print(kNumSegments - 1);
+					Serial.println(". Not changing function.");
+				}
 				return;
 			}
 
@@ -79,12 +85,54 @@ namespace touchgenerator {
 				cur_func_[i] = float(vals_[i]) * (max_val_ - min_val_) / float(cur_max) + min_val_;
 			}
 
-			// Print generated function
-			for (int i = 0; i < kNumSegments; i++) {
-				Serial.print(cur_func_[i], 2);
-				Serial.print("-");
+			if (debug_) {
+				// Print generated function
+				const int print_rows = 5;
+				const float row_span = (max_val_ - min_val_) / float(print_rows);
+				bool negative = false;
+				for (int row = 0; row < print_rows; row++) {
+					const float cur_mark = max_val_ - row * row_span;
+					bool print_zero = false;
+					if (cur_mark <= 0 && !negative) {
+						negative = true;
+						print_zero = true;
+					}
+					for (int i = 0; i < kNumSegments; i++) {
+						if ((cur_func_[i] >= cur_mark && !negative) ||
+							(cur_func_[i] <= cur_mark && negative)) {
+							// print full block.
+							Serial.write(0xE2);
+							Serial.write(0x96);
+							Serial.write(0x88);
+						}
+						else {
+							// print empty block.
+							Serial.write(0xE2);
+							Serial.write(0x96);
+							Serial.write(0x91);
+						}
+					}
+					Serial.print(" ");
+					if (row == 0) {
+						Serial.print(max_val_, 2);
+					}
+					else if (row == print_rows - 1) {
+						Serial.print(min_val_, 2);
+					}
+					else if (print_zero) {
+						Serial.print("0.00");
+					}
+
+					Serial.println();
+				}
+
+				Serial.print("[");
+				for (int i = 0; i < kNumSegments; i++) {
+					Serial.print(cur_func_[i], 2);
+					if (i < kNumSegments - 1) Serial.print(",");
+				}
+				Serial.println("]");
 			}
-			Serial.println();
 		}
 		recording_touch_sequence = has_touch;
 	}

@@ -30,6 +30,11 @@ namespace touchgenerator {
 		// move to the next step.
 		float Process();
 
+		// Update the current touch sequence, and if necessary the generated
+		// funtion.
+		// Should be called periodiaclly, usually in the arduino loop() function.
+		void Update();
+
 		// Set the frequency of the generated function in hz.
 		void SetFreq(float f);
 
@@ -41,10 +46,8 @@ namespace touchgenerator {
 		// accepted values are from 0 to 1.
 		void SetSmooth(float s);
 
-		// Update the current touch sequence, and if necessary the generated
-		// funtion.
-		// Should be called periodiaclly, usually in the arduino loop() function.
-		void Update();
+		// Set whether to print debug prints to serial.
+		void inline setDebug(bool debug) { debug_ = debug; };
 
 	private:
 		void OnPadTouch(uint16_t pad);
@@ -58,6 +61,7 @@ namespace touchgenerator {
 		float amp_ = 1.0f;
 		float min_val_ = -1.0f;
 		float max_val_ = 1.0f;
+		bool debug_ = false;
 
 		// A represntation of the current set generated functino / waveform.
 		float cur_func_[kNumSegments] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
