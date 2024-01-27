@@ -69,10 +69,10 @@ An example of using the generator as an LFO to control the cuttoff of a filter o
 
 I'll hopefully add more examples to this repository.
 
-## Wiring
+#### Wiring
 The code example expects a [Synthux Simple Fixed Synth](https://www.synthux.academy/shop/kit-simple-fix) with an MP121 touch sensor connected to i2c4 pins. It can be easily adjusted to any daisy seed.
 
-## Explicit Wiring
+#### Explicit Wiring
 | Daisy pin | SimpleSynth Socket | Function
 |-----------|--------------------|---------
 |    A2     |        S32         |  Filter cutoff range
@@ -86,10 +86,10 @@ An example for using the TouchGenerator as a sequencer selecting notes out of a 
 array of notes.
 Smoothing the generated function causes more notes being played between the main click notes.
 
-## Wiring
+#### Wiring
 The code example expects a [Synthux Simple Fixed Synth](https://www.synthux.academy/shop/kit-simple-fix) with an MP121 touch sensor connected to i2c4 pins. It can be easily adjusted to any daisy seed.
 
-## Explicit Wiring
+#### Explicit Wiring
 | Daisy pin | SimpleSynth Socket | Function
 |-----------|--------------------|---------
 |    A2     |        S32         |  Filter cutoff
