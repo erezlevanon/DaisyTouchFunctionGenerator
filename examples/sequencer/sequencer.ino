@@ -51,8 +51,7 @@ void AudioCallback(float** in, float** out, size_t size) {
 	// Update generator properties.
 	generator.SetFreq(powf(f_knob.Process(), 4) * 5.0f);
 	generator.SetSmooth(s_knob.Process());
-	// Update filter properties
-	filter.SetFreq(2028.0 - c_knob.Process() * 2028.0);
+	generator.SetRange(0.0f, c_knob.Process() * (float(kNumNotes) - 0.00000001f));
 	for (size_t i = 0; i < size; i++) {
 		osc.SetFreq(notes[int(generator.Process())]);
 		float value = filter.Process(osc.Process());
@@ -81,6 +80,7 @@ void setup() {
 	osc.SetAmp(1.0f);
 
 	filter.Init(sample_rate);
+	filter.SetFreq(800.0f);
 
 	// BEGIN CALLBACK
 	DAISY.begin(AudioCallback);
